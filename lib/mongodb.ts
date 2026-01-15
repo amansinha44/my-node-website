@@ -1,11 +1,5 @@
 import mongoose, { Mongoose } from "mongoose"
 
-const uri = process.env.MONGODB_URI as string
-
-if (!uri) {
-  throw new Error("Please define the MONGODB_URI environment variable")
-}
-
 declare global {
   // eslint-disable-next-line no-var
   var mongoose: {
@@ -24,12 +18,16 @@ if (!cached) {
 }
 
 export async function connectDB(): Promise<Mongoose> {
-    
   if (cached!.conn) {
     return cached!.conn
   }
 
   if (!cached!.promise) {
+    const uri = process.env.MONGODB_URI
+    if (!uri) {
+      throw new Error("Please define the MONGODB_URI environment variable")
+    }
+
     cached!.promise = mongoose.connect(uri, {
       bufferCommands: false,
     })
