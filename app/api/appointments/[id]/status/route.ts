@@ -1,15 +1,18 @@
 import { connectDB } from "@/lib/mongodb"
 import { Appointment } from "@/models/Appointment"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+type Params = {
+  params: Promise<{
+    id: string
+  }>
+}
+
+export async function PATCH(req: NextRequest, context: Params) {
   try {
     await connectDB()
 
-    const { id } = params // ✅ NO await
+    const { id } = await context.params
     const { status } = await req.json()
 
     if (!["pending", "confirmed", "cancelled"].includes(status)) {
